@@ -7,12 +7,14 @@ var streamify  = require('gulp-streamify');
 var gulpif     = require('gulp-if');
 var sass       = require('gulp-sass');
 var connect    = require('gulp-connect-multi')();
+var plumber    = require('gulp-plumber');
 
 var env = process.env.NODE_ENV || 'development';
 var outputDir = 'builds/development';
 
 gulp.task('jade', function(){
     return gulp.src('src/templates/**/*.jade')
+        .pipe(plumber())
         .pipe(jade())
         .pipe(gulp.dest(outputDir))
         .pipe(connect.reload());
@@ -20,6 +22,7 @@ gulp.task('jade', function(){
 
 gulp.task('js', function(){
     return browserify('./src/js/main', { debug: env === 'development' }).bundle()
+    .pipe(plumber())
     .pipe(source('bundle.js'))
     .pipe(gulpif(env === 'production', streamify(uglify())))
     .pipe(gulp.dest(outputDir + '/js'))
@@ -37,9 +40,10 @@ gulp.task('sass', function(){
     }
 
     return gulp.src('src/sass/main.scss')
-    .pipe(sass(config))
-    .pipe(gulp.dest(outputDir + '/css'))
-    .pipe(connect.reload());
+      .pipe(plumber())
+      .pipe(sass(config))
+      .pipe(gulp.dest(outputDir + '/css'))
+      .pipe(connect.reload());
 });
 
 gulp.task('watch', function(){
