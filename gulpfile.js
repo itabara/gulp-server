@@ -8,9 +8,15 @@ var gulpif     = require('gulp-if');
 var sass       = require('gulp-sass');
 var connect    = require('gulp-connect-multi')();
 var plumber    = require('gulp-plumber');
+var os         = require('os');
+
 
 var env = process.env.NODE_ENV || 'development';
 var outputDir = 'builds/development';
+
+var browser = os.platform() === 'linux' ? 'google-chrome' : (
+  os.platform() === 'darwin' ? 'google chrome' : (
+  os.platform() === 'win32' ? 'chrome' : 'firefox'));
 
 gulp.task('jade', function(){
     return gulp.src('src/templates/**/*.jade')
@@ -57,7 +63,8 @@ gulp.task('connect', connect.server({
   port: 8888,
   livereload: true,
   open: {
-    browser: 'Chrome' // if not working OS X browser: 'Google Chrome'
+    //browser: 'Chrome' // if not working OS X browser: 'Google Chrome'
+    browser: browser
   }
 }));
 
