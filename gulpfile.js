@@ -9,6 +9,7 @@ var sass       = require('gulp-sass');
 var connect    = require('gulp-connect-multi')();
 var plumber    = require('gulp-plumber');
 var os         = require('os');
+var imagemin   = require('gulp-imagemin');
 
 
 var env = process.env.NODE_ENV || 'development';
@@ -23,6 +24,13 @@ gulp.task('jade', function(){
         .pipe(plumber())
         .pipe(jade())
         .pipe(gulp.dest(outputDir))
+        .pipe(connect.reload());
+});
+
+gulp.task('images', function(){
+    return gulp.src('./src/img/*')
+        .pipe(gulpif(env === 'production', imagemin()))
+        .pipe(gulp.dest(outputDir + '/img'))
         .pipe(connect.reload());
 });
 
@@ -69,7 +77,7 @@ gulp.task('connect', connect.server({
 }));
 
 // you can use run-sequence
-gulp.task('default', ['js', 'jade', 'sass', 'watch', 'connect']);
+gulp.task('default', ['js', 'jade', 'sass', 'images', 'watch', 'connect']);
 
 // 1. run with >gulp jade
 // 2. SET NODE_ENV=development
